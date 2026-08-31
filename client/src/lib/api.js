@@ -37,23 +37,55 @@ export const formatNaira = (value) => new Intl.NumberFormat('en-NG', {
 export const cloudinaryCloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'aza7bayf';
 export const cloudinaryUploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'Spuntous braids';
 
+export function isVideoFile(file) {
+  return Boolean(file?.type?.startsWith('video/'));
+}
+
+export function isVideoUrl(url = '') {
+  const value = String(url).toLowerCase();
+  return value.includes('/video/upload/') || /\.(mp4|webm|mov|m4v|ogg)(\?|$)/.test(value);
+}
+
 export async function uploadUnsignedImage(file, folder = 'sumptuous-braids') {
+  return uploadUnsignedMedia(file, folder);
+}
+
+export async function uploadUnsignedMedia(file, folder = 'sumptuous-braids') {
+  const resource = isVideoFile(file) ? 'video' : 'image';
   const body = new FormData();
   body.append('file', file);
   body.append('upload_preset', cloudinaryUploadPreset);
   if (folder) body.append('folder', folder);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/${resource}/upload`, {
     method: 'POST',
     body,
   });
   const data = await res.json();
   if (!res.ok || !data.secure_url) {
-    throw new Error(data.error?.message || 'Unsigned Cloudinary upload failed. Confirm the preset is set to Unsigned.');
+    throw new Error(data.error?.message || 'Unsigned Cloudinary upload failed. Confirm the preset is Unsigned and allows images and videos.');
   }
   return data;
 }
 
 export const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '2348070453422';
+
+export function whatsappHref(message) {
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+}
+
+export const waMessages = {
+  floating: 'Hello Sumptuous Braids, I am messaging from the website. I would like to book a service or ask about a product.',
+  menu: 'Hello Sumptuous Braids, I opened the website menu and I would like to speak with you.',
+  footer: 'Hello Sumptuous Braids, I am contacting you from the website footer.',
+  heroBook: 'Hello Sumptuous Braids, I want to book a unisex braid or hair service. Please share available times and pricing.',
+  heroWhatsApp: 'Hello Sumptuous Braids, I would like to make an enquiry from the homepage.',
+  servicesHero: 'Hello Sumptuous Braids, I want to book a service. I can send a photo or describe the style I want.',
+  service: (name) => `Hello Sumptuous Braids, I want to book ${name}. Please share price, duration and available booking time.`,
+  product: (name, extra = '') => `Hello Sumptuous Braids, I want to order ${name}${extra}. Please confirm availability and how to pay.`,
+  gallery: (title) => `Hello Sumptuous Braids, I love this look${title ? ` (${title})` : ''} from your gallery. I want to book this style.`,
+  contact: 'Hello Sumptuous Braids, I am messaging from the contact page.',
+  delivery: 'Hello Sumptuous Braids, I want to ask about pickup or delivery.',
+};
 
 export const logoUrl = '/logo.png';
 
