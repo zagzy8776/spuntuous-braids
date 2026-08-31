@@ -1,0 +1,3 @@
+const router=require('express').Router();const slugify=require('slugify');const prisma=require('../lib/prisma');const auth=require('../middleware/auth');
+router.get('/',async(req,res,next)=>{try{res.json({categories:await prisma.category.findMany({orderBy:{name:'asc'}})})}catch(e){next(e)}});
+router.post('/',auth,async(req,res,next)=>{try{const {name}=req.body;if(!name)return res.status(400).json({message:'Category name is required.'});const category=await prisma.category.create({data:{name,slug:slugify(name,{lower:true,strict:true})}});res.status(201).json({category})}catch(e){next(e)}});module.exports=router;
