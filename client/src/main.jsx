@@ -1,24 +1,93 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, NavLink, Outlet, Route, Routes } from 'react-router-dom';
-import { Menu, MessageCircle, ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
-import { brand, whatsapp } from './lib/brand.js';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { CartProvider } from './context/CartContext.jsx';
+import { WishlistProvider } from './context/WishlistContext.jsx';
+import AppLayout from './components/AppLayout.jsx';
+import AdminLayout from './components/AdminLayout.jsx';
+import Home from './pages/Home.jsx';
+import Shop from './pages/Shop.jsx';
+import ProductDetails from './pages/ProductDetails.jsx';
+import Cart from './pages/Cart.jsx';
+import Checkout from './pages/Checkout.jsx';
+import OrderSuccess from './pages/OrderSuccess.jsx';
+import About from './pages/About.jsx';
+import Contact from './pages/Contact.jsx';
+import Gallery from './pages/Gallery.jsx';
+import Wishlist from './pages/Wishlist.jsx';
+import DeliveryInfo from './pages/DeliveryInfo.jsx';
+import Blog from './pages/Blog.jsx';
+import BlogPost from './pages/BlogPost.jsx';
+import StyleFinder from './pages/StyleFinder.jsx';
+import Gifts from './pages/Gifts.jsx';
+import Services from './pages/Services.jsx';
+import Wholesale from './pages/Wholesale.jsx';
+import AdminLogin from './pages/admin/AdminLogin.jsx';
+import Dashboard from './pages/admin/Dashboard.jsx';
+import AdminProducts from './pages/admin/AdminProducts.jsx';
+import AdminOrders from './pages/admin/AdminOrders.jsx';
+import AdminOrderDetails from './pages/admin/AdminOrderDetails.jsx';
+import AdminCategoriesCoupons from './pages/admin/AdminCategoriesCoupons.jsx';
+import AdminGallery from './pages/admin/AdminGallery.jsx';
+import AdminAnalytics from './pages/admin/AdminAnalytics.jsx';
+import AdminTestimonials from './pages/admin/AdminTestimonials.jsx';
+import AdminSales from './pages/admin/AdminSales.jsx';
+import AdminCustomers from './pages/admin/AdminCustomers.jsx';
+import AdminPromos from './pages/admin/AdminPromos.jsx';
+import AdminStockAlerts from './pages/admin/AdminStockAlerts.jsx';
+import AdminWhatsAppTemplates from './pages/admin/AdminWhatsAppTemplates.jsx';
 import './styles.css';
 
-const products = [
-  { id: 'hair-oil', name: 'Sumptuous Hair Oil', category: 'Hair Care', description: 'Branded hair oil for everyday hair care.' },
-  { id: 'edge-control', name: 'Sumptuous Edge Control', category: 'Hair Care', description: 'Branded edge control for a clean, polished finish.' },
-  { id: 'braiding-extensions', name: 'Braiding Extensions', category: 'Braiding Hair', description: 'Quality extensions selected for beautiful braid installations.' },
-];
+const Protected = ({ children }) => {
+  const token = localStorage.getItem('sb_admin_token');
+  return token ? children : <Navigate to="/admin/login" replace />;
+};
 
-function Layout(){const [open,setOpen]=useState(false);const links=[['Home','/'],['Services','/services'],['Shop','/shop'],['Wholesale','/wholesale'],['Gallery','/gallery'],['About','/about'],['Contact','/contact']];return <div className="site-shell"><div className="topbar">Professional braiding • Branded hair products • Wholesale enquiries</div><header className="header"><a className="brand" href="/"><img src="/logo.svg" alt="Sumptuous Braids logo"/><span>SUMPTUOUS<br/><small>BRAIDS</small></span></a><nav className="desktop-nav">{links.map(([label,path])=><NavLink key={path} to={path}>{label}</NavLink>)}</nav><div className="header-actions"><a className="whatsapp-mini" href={whatsapp('Hello Sumptuous Braids, I would like to make an enquiry.')}><MessageCircle size={18}/> <span>WhatsApp</span></a><a className="cart-mini" href="/shop"><ShoppingBag size={19}/></a><button className="menu" onClick={()=>setOpen(!open)}><Menu size={21}/></button></div></header>{open&&<nav className="mobile-nav">{links.map(([label,path])=><NavLink key={path} to={path} onClick={()=>setOpen(false)}>{label}</NavLink>)}</nav>}<Outlet/><a className="floating-whatsapp" href={whatsapp('Hello Sumptuous Braids, I would like to make an enquiry.')} aria-label="Chat on WhatsApp"><MessageCircle size={24}/></a><footer><div><h3>Sumptuous Braids</h3><p>Professional braiding services and branded hair products, serving clients from our Owerri location.</p></div><div><h4>Visit us</h4><p>{brand.address}</p><a href={brand.map}>Get directions</a></div><div><h4>Contact</h4><p><a href={`tel:${brand.phone}`}>{brand.phone}</a></p><p><a href={`mailto:${brand.email}`}>{brand.email}</a></p><div className="socials"><a href={brand.instagram}>Instagram</a><a href={brand.tiktok}>TikTok</a><a href={brand.facebook}>Facebook</a></div></div></footer></div>}
-function Home(){return <main><section className="hero"><div className="hero-copy"><p className="eyebrow">SUMPTUOUS BRAIDS • OWERRI</p><h1>Beautiful braids.<br/><em>Sumptuous</em> finish.</h1><p className="hero-text">Professional braid installation and carefully branded hair essentials, all from one trusted beauty brand.</p><div className="cta-row"><a className="btn btn-primary" href="/services">Explore services</a><a className="btn btn-ghost" href={whatsapp('Hello Sumptuous Braids, I would like to book a braiding service.')}>Book on WhatsApp</a></div></div><div className="hero-card"><img src="/logo.svg" alt="Sumptuous Braids"/><div><strong>Hair • Beauty • Care</strong><span>One brand. Everything you need.</span></div></div></section><section className="intro"><p className="eyebrow">THE BRAND</p><h2>From the chair to your shelf.</h2><p>Come for professional braid installation. Stay for the products made for your hair routine. Retail customers, salons and stockists can all work with Sumptuous Braids through one website.</p><div className="feature-grid"><a href="/services"><b>01</b><h3>Salon services</h3><span>Browse services and enquire directly.</span></a><a href="/shop"><b>02</b><h3>Branded products</h3><span>Shop hair oil, edge control and extensions.</span></a><a href="/wholesale"><b>03</b><h3>Wholesale & stockists</h3><span>Order in bulk for your store or salon.</span></a></div></section></main>}
-function Services(){const items=['Braid Installation','Knotless Braids','Box Braids','Stitch Braids','Cornrows & Feed-in Braids','Wig Installation','Hair Styling & Finishing'];return <main className="page"><section className="page-hero"><p className="eyebrow">PROFESSIONAL SERVICES</p><h1>Hair artistry with a polished finish.</h1><p>For current pricing, availability and style consultation, speak directly with Sumptuous Braids on WhatsApp.</p><a className="btn btn-primary" href={whatsapp('Hello Sumptuous Braids, I want to book a service.')}>Book an appointment</a></section><section className="cards">{items.map((x,i)=><article className="service-card" key={x}><span>0{i+1}</span><h2>{x}</h2><p>Professional installation with attention to neatness, comfort and a beautiful final finish.</p><a href={whatsapp(`Hello Sumptuous Braids, I want to ask about ${x}.`)}>Enquire →</a></article>)}</section></main>}
-function Shop(){return <main className="page"><section className="page-hero light"><p className="eyebrow">THE SUMPTUOUS COLLECTION</p><h1>Branded essentials for your hair.</h1><p>Every product belongs to the Sumptuous Braids brand. Prices and availability can be confirmed directly before dispatch.</p></section><section className="product-grid">{products.map(p=><article className="product-card" key={p.id}><div className="product-placeholder">SB</div><div className="product-body"><small>{p.category}</small><h2>{p.name}</h2><p>{p.description}</p><a className="btn btn-dark" href={whatsapp(`Hello Sumptuous Braids, I want to order ${p.name}.`)}>Order on WhatsApp</a></div></article>)}</section></main>}
-function Wholesale(){return <main className="page"><section className="page-hero"><p className="eyebrow">WHOLESALE & STOCKISTS</p><h1>Put Sumptuous products on your shelves.</h1><p>For beauty stores, salons and resellers who want to stock branded hair products, contact us for bulk quantities, wholesale terms and dispatch.</p><a className="btn btn-primary" href={whatsapp('Hello Sumptuous Braids, I am interested in becoming a stockist.')}>Become a stockist</a></section><section className="wholesale-grid"><article><h2>Bulk supply</h2><p>Ask about available quantities and wholesale pricing for your business.</p></article><article><h2>Retail-ready brand</h2><p>Stock products customers can recognize and reorder from the Sumptuous Braids brand.</p></article><article><h2>Dispatch</h2><p>Orders are coordinated and dispatched based on destination after confirmation.</p></article></section></main>}
-function Gallery(){return <main className="page"><section className="page-hero light"><p className="eyebrow">OUR WORK</p><h1>Gallery</h1><p>Real work and product photography will live here as the brand gallery is populated.</p></section><div className="gallery-placeholder"><span>SUMPTUOUS BRAIDS</span><p>Gallery management will allow the owner to publish braid and product photos.</p></div></main>}
-function About(){return <main className="page"><section className="page-hero"><p className="eyebrow">ABOUT</p><h1>A beauty brand built around the client.</h1><p>Sumptuous Braids brings professional hairstyling and branded hair essentials together under one roof, with direct support through WhatsApp.</p></section></main>}
-function Contact(){return <main className="page"><section className="contact-page"><div><p className="eyebrow">CONTACT SUMPTUOUS BRAIDS</p><h1>Talk to us directly.</h1><p>We keep enquiries simple: call, email, or go straight to WhatsApp.</p><a className="btn btn-primary" href={whatsapp('Hello Sumptuous Braids, I would like to make an enquiry.')}>Open WhatsApp</a></div><div className="contact-card"><p><b>Phone</b><br/>{brand.phone}</p><p><b>Email</b><br/>{brand.email}</p><p><b>Location</b><br/>{brand.address}</p><p className="socials"><a href={brand.instagram}>Instagram</a><a href={brand.tiktok}>TikTok</a><a href={brand.facebook}>Facebook</a></p></div></section></main>}
-function NotFound(){return <main className="page"><section className="page-hero light"><h1>Page not found.</h1><a href="/">Return home</a></section></main>}
-createRoot(document.getElementById('root')).render(<React.StrictMode><BrowserRouter><Routes><Route element={<Layout/>}><Route path="/" element={<Home/>}/><Route path="/services" element={<Services/>}/><Route path="/shop" element={<Shop/>}/><Route path="/wholesale" element={<Wholesale/>}/><Route path="/gallery" element={<Gallery/>}/><Route path="/about" element={<About/>}/><Route path="/contact" element={<Contact/>}/><Route path="*" element={<NotFound/>}/></Route></Routes></BrowserRouter></React.StrictMode>);
+createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <WishlistProvider>
+        <CartProvider>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/product/:slug" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success" element={<OrderSuccess />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/gifts" element={<Gifts />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/wholesale" element={<Wholesale />} />
+            <Route path="/style-finder" element={<StyleFinder />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/delivery" element={<DeliveryInfo />} />
+            <Route path="/contact" element={<Contact />} />
+          </Route>
+
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<Protected><AdminLayout /></Protected>}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="orders/:id" element={<AdminOrderDetails />} />
+            <Route path="gallery" element={<AdminGallery />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
+            <Route path="sales" element={<AdminSales />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="promos" element={<AdminPromos />} />
+            <Route path="stock-alerts" element={<AdminStockAlerts />} />
+            <Route path="whatsapp" element={<AdminWhatsAppTemplates />} />
+            <Route path="testimonials" element={<AdminTestimonials />} />
+            <Route path="settings" element={<AdminCategoriesCoupons />} />
+          </Route>
+        </Routes>
+        </CartProvider>
+      </WishlistProvider>
+    </BrowserRouter>
+  </React.StrictMode>
+);
