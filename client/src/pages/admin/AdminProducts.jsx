@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, CheckCircle2, Edit3, Image, ImagePlus, Plus, Search, Trash2, UploadCloud, X } from 'lucide-react';
-import { api, formatNaira } from '../../lib/api.js';
+import { api, formatNaira, uploadUnsignedImage } from '../../lib/api.js';
 
 const empty = { name: '', description: '', price: '', costPrice: '', salePrice: '', size: '', notes: '', images: '', stock: 0, isFeatured: false, isActive: true, categoryId: '' };
 
@@ -83,14 +83,12 @@ export default function AdminProducts() {
     setMessage('');
     setImageUploading(true);
     try {
-      const body = new FormData();
-      body.append('image', selectedFile);
-      const res = await api.post('/products/upload-image', body, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const uploaded = await uploadUnsignedImage(selectedFile, 'sumptuous-braids-products');
       const currentImages = form.images.split('\n').map((item) => item.trim()).filter(Boolean);
-      update('images', [res.data.imageUrl, ...currentImages].join('\n'));
+      update('images', [uploaded.secure_url, ...currentImages].join('\n'));
       setMessage('Product image uploaded. Fill the product details and save.');
     } catch (err) {
-      setError(err.response?.data?.message || 'Image upload failed. Confirm Cloudinary variables are added on Render and redeploy backend.');
+      setError(err.message || 'Image upload failed. Confirm the Cloudinary preset is Unsigned.');
     } finally {
       setImageUploading(false);
     }
@@ -119,20 +117,19 @@ export default function AdminProducts() {
           <input required type="number" placeholder="Price" value={form.price} onChange={(e) => update('price', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none" />
           <input type="number" placeholder="Cost price admin only" value={form.costPrice || ''} onChange={(e) => update('costPrice', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none" />
           <input type="number" placeholder="Sale price optional" value={form.salePrice} onChange={(e) => update('salePrice', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none" />
-          <input placeholder="Size e.g. 100ml / available sizes" value={form.size || ''} onChange={(e) => update('size', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none" />
+          <input placeholder="Size e.g. pack / length" value={form.size || ''} onChange={(e) => update('size', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none" />
           <input type="number" placeholder="Stock" value={form.stock} onChange={(e) => update('stock', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none" />
           <textarea placeholder="Description" value={form.description} onChange={(e) => update('description', e.target.value)} className="min-h-28 rounded-2xl bg-stone-100 px-4 py-3 outline-none lg:col-span-2" />
-
-          <input placeholder="Notes/tags comma separated e.g. Amber, Vanilla, Gift Ready" value={form.notes} onChange={(e) => update('notes', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none lg:col-span-2" />
+          <input placeholder="Notes/tags comma separated" value={form.notes} onChange={(e) => update('notes', e.target.value)} className="rounded-2xl bg-stone-100 px-4 py-3 outline-none lg:col-span-2" />
           <div className="grid gap-4 rounded-[1.5rem] bg-amber-50 p-4 lg:col-span-2 md:grid-cols-[220px_1fr]">
             <label className="grid min-h-44 cursor-pointer place-items-center overflow-hidden rounded-[1.2rem] border-2 border-dashed border-amber-300 bg-white/70 text-center transition hover:bg-amber-100">
-              {previewImage ? <img src={previewImage} alt="Product preview" className="h-full w-full object-contain p-2" /> : <div className="p-5"><ImagePlus className="mx-auto text-amber-700" size={38} /><p className="mt-3 text-sm font-semibold">Click to choose product image</p><p className="mt-1 text-xs text-stone-500">Phone gallery/camera</p><p className="mt-2 text-[11px] text-stone-400">Full picture shows without cropping.</p></div>}
+              {previewImage ? <img src={previewImage} alt="Product preview" className="h-full w-full object-contain p-2" /> : <div className="p-5"><ImagePlus className="mx-auto text-amber-700" size={38} /><p className="mt-3 text-sm font-semibold">Click to choose product image</p></div>}
               <input type="file" accept="image/*" onChange={(e) => uploadProductImage(e.target.files?.[0])} className="hidden" />
             </label>
             <div className="grid content-start gap-3">
               <div>
                 <div className="flex items-center gap-2 text-sm font-semibold text-stone-800"><UploadCloud size={16} className="text-amber-700" /> Product Pictures</div>
-                <p className="mt-1 text-xs leading-5 text-stone-600">Admin should click the image box to pick from phone gallery. The image will upload to Cloudinary and the URL will appear below automatically. You can also paste extra image URLs if needed.</p>
+                <p className="mt-1 text-xs leading-5 text-stone-600">Images upload unsigned to Cloudinary. The URL appears below automatically.</p>
               </div>
               <textarea placeholder="Uploaded image URLs will appear here automatically. One URL per line." value={form.images} onChange={(e) => update('images', e.target.value)} className="min-h-24 rounded-2xl bg-white px-4 py-3 text-sm outline-none" />
               {imageUploading && <p className="text-sm font-semibold text-amber-700">Uploading image...</p>}
@@ -153,28 +150,6 @@ export default function AdminProducts() {
           <p className="mt-2 text-sm text-stone-400">{form.description || 'Product description preview will appear here.'}</p>
         </aside>
       </form>
-
-      <div className="mt-8 rounded-[2rem] border border-amber-900/10 bg-white p-4 shadow-sm">
-        <label className="flex items-center gap-3 rounded-full bg-stone-100 px-4">
-          <Search size={18} className="text-stone-500" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products or categories..." className="w-full bg-transparent py-3 outline-none" />
-        </label>
-      </div>
-
-      <div className="mt-5 grid gap-4">
-        {filteredProducts.map((product) => (
-          <div key={product.id} className="grid gap-4 rounded-[2rem] bg-white p-4 shadow-sm md:grid-cols-[90px_1fr_130px_190px] md:items-center">
-            <img src={product.images?.[0] || 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=400&q=80'} alt={product.name} className="h-24 w-24 rounded-2xl bg-amber-50 object-contain p-1" />
-            <div>
-              <div className="flex flex-wrap items-center gap-2"><strong>{product.name}</strong>{product.isFeatured && <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-800">Featured</span>}{!product.isActive && <span className="rounded-full bg-red-50 px-2 py-1 text-xs text-red-700">Hidden</span>}</div>
-              <p className="mt-1 text-sm text-stone-500">{product.category?.name || 'No category'} · Stock {product.stock} · Cost {formatNaira(product.costPrice || 0)} · {product.size || 'No size'}</p>
-            </div>
-            <strong>{formatNaira(product.salePrice || product.price)}</strong>
-            <div className="flex gap-2"><button onClick={() => edit(product)} className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-900"><Edit3 size={15} /> Edit</button><button onClick={() => remove(product.id)} className="inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-2 text-sm font-semibold text-red-700"><Trash2 size={15} /> Delete</button></div>
-          </div>
-        ))}
-        {!filteredProducts.length && <p className="rounded-[2rem] bg-white p-10 text-center text-stone-500">No products found.</p>}
-      </div>
     </section>
   );
 }
