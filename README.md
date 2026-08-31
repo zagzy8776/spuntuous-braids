@@ -1,39 +1,33 @@
 # Sumptuous Braids
 
-Professional braiding studio and branded hair-product store for Sumptuous Braids in Owerri.
-
-The architecture matches the Roc Realm Perfumes production stack: React + Vite storefront, Express + Prisma API, WhatsApp checkout, and a full admin panel.
+Professional braiding studio site. Frontend and API both deploy on Vercel.
 
 ## Stack
 
-- Frontend: React + Vite + Tailwind CSS, deployable on Vercel
-- Backend: Express + Prisma, deployable on Render
-- Database: PostgreSQL on Neon
-- Current checkout: order saved to database and sent to WhatsApp
+- Frontend: React + Vite + Tailwind on Vercel
+- API: Express serverless function on the same Vercel project
+- Database: Neon PostgreSQL (`DATABASE_URL` only)
+- Images: unsigned Cloudinary upload (cloud name + upload preset)
 
-## Features
+## Vercel environment variables
 
-- Luxury homepage
-- Shop / catalog
-- Product detail, cart, wishlist, checkout
-- Services and wholesale pages
-- Style finder
-- Gallery, blog, delivery information
-- WhatsApp order and booking messages
-- Admin dashboard, products, orders, gallery, coupons, promos, analytics
+```
+DATABASE_URL=postgresql://...neon.tech/neondb?sslmode=require
+JWT_SECRET=a-long-random-secret
+CLIENT_URL=https://your-app.vercel.app
+ADMIN_NAME=Sumptuous Braids Admin
+ADMIN_EMAIL=admin@sumptuousbraids.com
+ADMIN_PASSWORD=choose-a-strong-password
+NODE_ENV=production
+VITE_API_URL=/api
+VITE_WHATSAPP_NUMBER=2348070453422
+VITE_CLOUDINARY_CLOUD_NAME=aza7bayf
+VITE_CLOUDINARY_UPLOAD_PRESET=Spuntous braids
+```
 
-## Brand
+In Cloudinary, the preset must be **Unsigned**.
 
-- Studio: 86 Wethral Road, opposite Premium Trust Bank
-- Phone / WhatsApp: 08070453422
-- Email: Johnassumpta3@gmail.com
-- Instagram: https://www.instagram.com/sumptuousbraids
-- TikTok: https://www.tiktok.com/@sumptuousbraids
-- Facebook: https://www.facebook.com/share/14msRH6cJ4t/
-
-## Local Setup
-
-### Backend
+## Local setup
 
 ```bash
 cd server
@@ -45,8 +39,6 @@ npm run db:seed
 npm run dev
 ```
 
-### Frontend
-
 ```bash
 cd client
 cp .env.example .env
@@ -54,22 +46,4 @@ npm install --include=dev
 npm run dev
 ```
 
-Set `VITE_WHATSAPP_NUMBER=2348070453422`.
-
-## Default Seed Admin
-
-- Email: `admin@sumptuousbraids.com`, or set `ADMIN_EMAIL`
-- Password: `ChangeMe123!`
-
-Change these in `server/.env` before deployment.
-
-## Deployment
-
-Same process as the perfume store:
-
-- Neon PostgreSQL for `DATABASE_URL`
-- Render for the `server` folder
-- Vercel for the `client` folder
-- Set `CLIENT_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `VITE_API_URL`, and `VITE_WHATSAPP_NUMBER`
-
-Do not commit real `.env` files.
+Default admin: `admin@sumptuousbraids.com` / `ChangeMe123!`
