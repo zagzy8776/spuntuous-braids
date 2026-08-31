@@ -2,29 +2,37 @@ name: Build Sumptuous Braids
 
 on:
   push:
-    branches: [main, 'build/**']
-  pull_request:
-    branches: [main]
+    branches:
+      - build/roc-realm-adaptation
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  sync-reference-architecture:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout target branch
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: client/package-lock.json
+          fetch-depth: 0
+          ref: build/roc-realm-adaptation
 
-      - name: Install client dependencies
-        working-directory: client
-        run: npm install
+      - name: Copy the complete Roc Realm codebase
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/roc
+          git clone --depth 1 https://github.com/zagzy8776/Rocrealmperfumes.git /tmp/roc
+          rsync -a --delete --exclude='.git/' --exclude='.github/' /tmp/roc/ ./
 
-      - name: Build client
-        working-directory: client
-        run: npm run build
+      - name: Commit the complete source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: sync complete Roc Realm source architecture [skip ci]' || exit 0
+          git push origin HEAD:build/roc-realm-adaptation
