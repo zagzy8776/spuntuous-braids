@@ -3,7 +3,7 @@ import { CreditCard, Heart, Mail, MapPin, Menu, MessageCircle, PackageCheck, Pho
 import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
-import { businessInfo, logoUrl, whatsappNumber } from '../lib/api.js';
+import { businessInfo, logoUrl, waMessages, whatsappHref } from '../lib/api.js';
 import FloatingWhatsApp from './FloatingWhatsApp.jsx';
 import RouteTracker from './RouteTracker.jsx';
 import PromoStrip from './PromoStrip.jsx';
@@ -12,7 +12,6 @@ const nav = [
   ['Home', '/'],
   ['Shop', '/shop'],
   ['Services', '/services'],
-  ['Wholesale', '/wholesale'],
   ['Gallery', '/gallery'],
   ['Blog', '/blog'],
   ['Delivery', '/delivery'],
@@ -50,11 +49,7 @@ export default function AppLayout() {
           </Link>
           <nav className="hidden items-center gap-6 lg:flex">
             {nav.map(([label, path]) => (
-              <NavLink
-                key={path}
-                to={path}
-                className={({ isActive }) => `text-sm font-medium transition ${isActive ? 'text-amber-700' : 'text-stone-700 hover:text-amber-700'}`}
-              >
+              <NavLink key={path} to={path} className={({ isActive }) => `text-sm font-medium transition ${isActive ? 'text-amber-700' : 'text-stone-700 hover:text-amber-700'}`}>
                 {label}
               </NavLink>
             ))}
@@ -102,7 +97,7 @@ export default function AppLayout() {
               <a href={`tel:${businessInfo.callLine}`} className="inline-flex items-center justify-center gap-2 rounded-full bg-stone-950 px-5 py-3 text-[16px] font-semibold text-white">
                 <Phone size={18} /> Call {businessInfo.phoneDisplay}
               </a>
-              <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-[16px] font-semibold text-white">
+              <a href={whatsappHref(waMessages.menu)} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-green-600 px-5 py-3 text-[16px] font-semibold text-white">
                 <MessageCircle size={18} /> WhatsApp us
               </a>
             </div>
@@ -116,23 +111,23 @@ export default function AppLayout() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
           <div>
             <h3 className="font-display text-2xl text-white">{businessInfo.name}</h3>
-            <p className="mt-3 text-sm leading-6 text-stone-400">Professional braid installation, branded hair products, and wholesale supply from our studio at 86 Wethral Road, opposite Premium Trust Bank.</p>
+            <p className="mt-3 text-sm leading-6 text-stone-400">Professional unisex braid installation and branded hair care from our studio at 86 Wethral Road, opposite Premium Trust Bank.</p>
           </div>
           <div>
             <h4 className="font-semibold text-amber-300">Quick Links</h4>
             <div className="mt-4 grid gap-2 text-sm text-stone-400">
               <Link to="/services">Book a Service</Link>
               <Link to="/shop">Shop Products</Link>
-              <Link to="/wholesale">Wholesale</Link>
               <Link to="/gallery">Gallery</Link>
+              <Link to="/delivery">Delivery</Link>
               <Link to="/contact">Contact</Link>
             </div>
           </div>
           <div>
             <h4 className="font-semibold text-amber-300">Studio Support</h4>
-            <p className="mt-4 text-sm text-stone-400">Appointments, product orders, payment confirmation, and wholesale enquiries are handled with care.</p>
+            <p className="mt-4 text-sm text-stone-400">Appointments, product orders and payment confirmation are handled on WhatsApp so nothing sits in a missed inbox.</p>
             <div className="mt-5 grid gap-3 text-sm text-stone-300">
-              <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 transition hover:text-amber-200"><MessageCircle size={17} className="text-green-400" /> WhatsApp: {businessInfo.phoneDisplay}</a>
+              <a href={whatsappHref(waMessages.footer)} target="_blank" rel="noreferrer" className="flex items-center gap-3 transition hover:text-amber-200"><MessageCircle size={17} className="text-green-400" /> WhatsApp: {businessInfo.phoneDisplay}</a>
               <a href={`tel:${businessInfo.callLine}`} className="flex items-center gap-3 transition hover:text-amber-200"><Phone size={17} className="text-amber-300" /> Call: {businessInfo.callLine}</a>
               <a href={`mailto:${businessInfo.email}`} className="flex items-center gap-3 transition hover:text-amber-200"><Mail size={17} className="text-amber-300" /> {businessInfo.email}</a>
               <span className="flex items-center gap-3"><CreditCard size={17} className="text-amber-300" /> Bank transfer / pay on delivery</span>

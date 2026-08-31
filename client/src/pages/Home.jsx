@@ -1,23 +1,35 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { api, whatsappNumber } from '../lib/api.js';
+import { api, waMessages, whatsappHref } from '../lib/api.js';
 import { setPageMeta } from '../lib/seo.js';
 import ProductCard from '../components/ProductCard.jsx';
+import MediaCard from '../components/MediaCard.jsx';
 
 const HOME_PRODUCTS_PER_BATCH = 12;
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [featuredWork, setFeaturedWork] = useState([]);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1, hasMore: false });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setPageMeta({ title: 'Sumptuous Braids', description: 'Professional braid installation, branded hair products, and wholesale supply in Owerri.' });
+    setPageMeta({ title: 'Sumptuous Braids', description: 'Professional unisex braid installation and branded hair care from a trusted studio in Owerri.' });
     fetchProducts(1, false);
     api.get('/categories').then((res) => setCategories(res.data.categories)).catch(() => setCategories([]));
+    api.get('/gallery/featured').then((res) => {
+      const featured = res.data.images || [];
+      if (featured.length) {
+        setFeaturedWork(featured);
+        return null;
+      }
+      return api.get('/gallery?limit=8');
+    }).then((res) => {
+      if (res?.data?.images) setFeaturedWork(res.data.images);
+    }).catch(() => setFeaturedWork([]));
   }, []);
 
   const fetchProducts = async (targetPage = 1, shouldScroll = true) => {
@@ -49,12 +61,12 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-16">
           <p className="mb-4 inline-flex rounded-full border border-amber-300/30 px-3 py-1.5 text-xs text-amber-200 sm:px-4 sm:py-2 sm:text-sm">Sumptuous Braids · Owerri</p>
           <h1 className="font-display text-[2rem] font-semibold leading-[1.15] sm:text-6xl">Beautiful braids. A sumptuous finish.</h1>
-          <p className="mt-4 max-w-2xl text-[15px] leading-7 text-stone-200 sm:text-lg">Professional braid installation, branded hair essentials, and wholesale supply from one trusted beauty studio at 86 Wethral Road, opposite Premium Trust Bank.</p>
+          <p className="mt-4 max-w-2xl text-[15px] leading-7 text-stone-200 sm:text-lg">Professional unisex braid installation and branded hair care from your number one trusted studio in Owerri. Book a style, shop the products, or stock your shelf all in one place.</p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
             <Link to="/services" className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-[16px] font-semibold text-stone-950 hover:bg-amber-300">Book a service <ArrowRight size={18} /></Link>
             <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
               <Link to="/shop" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">Shop products</Link>
-              <a href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello Sumptuous Braids, I would like to make an enquiry.')}`} target="_blank" rel="noreferrer" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">WhatsApp us</a>
+              <a href={whatsappHref(waMessages.heroWhatsApp)} target="_blank" rel="noreferrer" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">WhatsApp us</a>
             </div>
           </div>
         </div>
@@ -65,20 +77,37 @@ export default function Home() {
           <Link to="/services" className="rounded-2xl bg-white p-5 shadow-lg shadow-stone-900/5 ring-1 ring-amber-900/10 sm:rounded-[2rem] sm:p-6">
             <p className="text-[11px] uppercase tracking-[0.28em] text-amber-700">01</p>
             <h2 className="mt-2 font-display text-[1.65rem] leading-tight sm:mt-3 sm:text-2xl">Salon services</h2>
-            <p className="mt-2 text-sm leading-6 text-stone-600">Knotless, box braids, stitch, cornrows, wig installation and finishing.</p>
+            <p className="mt-2 text-sm leading-6 text-stone-600">Unisex braid installation, wig installation, styling and finishing.</p>
           </Link>
           <Link to="/shop" className="rounded-2xl bg-white p-5 shadow-lg shadow-stone-900/5 ring-1 ring-amber-900/10 sm:rounded-[2rem] sm:p-6">
             <p className="text-[11px] uppercase tracking-[0.28em] text-amber-700">02</p>
             <h2 className="mt-2 font-display text-[1.65rem] leading-tight sm:mt-3 sm:text-2xl">Branded products</h2>
             <p className="mt-2 text-sm leading-6 text-stone-600">Hair oil, edge control, braiding extensions and care essentials.</p>
           </Link>
-          <Link to="/wholesale" className="rounded-2xl bg-white p-5 shadow-lg shadow-stone-900/5 ring-1 ring-amber-900/10 sm:rounded-[2rem] sm:p-6">
+          <Link to="/gallery" className="rounded-2xl bg-white p-5 shadow-lg shadow-stone-900/5 ring-1 ring-amber-900/10 sm:rounded-[2rem] sm:p-6">
             <p className="text-[11px] uppercase tracking-[0.28em] text-amber-700">03</p>
-            <h2 className="mt-2 font-display text-[1.65rem] leading-tight sm:mt-3 sm:text-2xl">Wholesale</h2>
-            <p className="mt-2 text-sm leading-6 text-stone-600">Stock Sumptuous products for your salon, store or beauty business.</p>
+            <h2 className="mt-2 font-display text-[1.65rem] leading-tight sm:mt-3 sm:text-2xl">Our work</h2>
+            <p className="mt-2 text-sm leading-6 text-stone-600">Photos and videos of finished styles from the studio.</p>
           </Link>
         </div>
       </section>
+
+      {featuredWork.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 sm:pt-10 lg:px-8">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-amber-700">Studio work</p>
+              <h2 className="font-display text-3xl font-semibold sm:text-4xl">See the finish</h2>
+            </div>
+            <Link to="/gallery" className="font-semibold text-amber-800">Open gallery</Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {featuredWork.map((item) => (
+              <MediaCard key={item.id} item={item} className="w-44 shrink-0 sm:w-56" />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-7xl px-4 pt-7 sm:px-6 sm:pt-10 lg:px-8">
         <div className="flex gap-3 overflow-x-auto pb-1">
