@@ -8,6 +8,10 @@
   text-size-adjust: 100%;
 }
 
+html {
+  touch-action: manipulation;
+}
+
 html,
 body {
   margin: 0;
@@ -15,6 +19,7 @@ body {
   min-height: 100%;
   background: #fffaf1;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -29,9 +34,15 @@ a,
 button,
 input,
 select,
-textarea {
+textarea,
+summary {
   touch-action: manipulation;
-  font-size: max(16px, 1em);
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
 }
 
 .font-display {
