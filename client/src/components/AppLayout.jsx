@@ -1,6 +1,6 @@
-import { Link, NavLink, Outlet } from 'react-router-dom';
-import { CreditCard, Heart, Mail, MapPin, Menu, MessageCircle, PackageCheck, Phone, ShoppingBag, Truck } from 'lucide-react';
-import { useState } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { CreditCard, Heart, Mail, MapPin, Menu, MessageCircle, PackageCheck, Phone, ShoppingBag, Truck, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext.jsx';
 import { useWishlist } from '../context/WishlistContext.jsx';
 import { businessInfo, logoUrl, whatsappNumber } from '../lib/api.js';
@@ -22,46 +22,55 @@ const nav = [
 
 export default function AppLayout() {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
   const { count } = useCart();
   const { count: wishlistCount } = useWishlist();
-  const linkClass = ({ isActive }) => `text-sm font-medium transition ${isActive ? 'text-amber-700' : 'text-stone-700 hover:text-amber-700'}`;
+  const linkClass = ({ isActive }) => `block py-2 text-base font-medium transition ${isActive ? 'text-amber-700' : 'text-stone-700 hover:text-amber-700'}`;
+
+  useEffect(() => { setOpen(false); }, [location.pathname]);
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
 
   return (
-    <div className="min-h-screen bg-[#fffaf1] text-stone-900">
+    <div className="min-h-screen overflow-x-hidden bg-[#fffaf1] text-stone-900">
       <RouteTracker />
-      <header className="sticky top-0 z-40 border-b border-amber-900/10 bg-[#fffaf1]/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-amber-900/10 bg-[#fffaf1]/95 backdrop-blur-xl">
         <PromoStrip />
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-stone-950 shadow-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:px-6 sm:py-3 lg:px-8">
+          <Link to="/" className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-stone-950 shadow-sm sm:h-12 sm:w-12">
               <img src={logoUrl} alt="Sumptuous Braids logo" className="h-full w-full object-cover" />
             </span>
-            <span>
-              <strong className="font-display text-xl tracking-wide">Sumptuous</strong>
-              <span className="block text-xs uppercase tracking-[0.35em] text-amber-700">Braids</span>
+            <span className="min-w-0">
+              <strong className="font-display block truncate text-base tracking-wide sm:text-xl">Sumptuous</strong>
+              <span className="block text-[10px] uppercase tracking-[0.28em] text-amber-700 sm:text-xs sm:tracking-[0.35em]">Braids</span>
             </span>
           </Link>
           <nav className="hidden items-center gap-6 lg:flex">
-            {nav.map(([label, path]) => <NavLink key={path} to={path} className={linkClass}>{label}</NavLink>)}
+            {nav.map(([label, path]) => <NavLink key={path} to={path} className={({ isActive }) => `text-sm font-medium transition ${isActive ? 'text-amber-700' : 'text-stone-700 hover:text-amber-700'}`}>{label}</NavLink>)}
           </nav>
-          <div className="flex items-center gap-3">
-            <a href={`tel:${businessInfo.callLine}`} className="rounded-full border border-amber-900/20 p-3 transition hover:bg-amber-100 lg:hidden" aria-label={`Call Sumptuous Braids on ${businessInfo.callLine}`}><Phone size={19} /></a>
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+            <a href={`tel:${businessInfo.callLine}`} className="hidden rounded-full border border-amber-900/20 p-2.5 transition hover:bg-amber-100 sm:inline-flex lg:hidden" aria-label={`Call Sumptuous Braids on ${businessInfo.callLine}`}><Phone size={18} /></a>
             <a href={`tel:${businessInfo.callLine}`} className="hidden rounded-full bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-amber-700 lg:inline-flex">Call: {businessInfo.callLine}</a>
-            <Link to="/wishlist" className="relative rounded-full border border-amber-900/20 p-3 hover:bg-amber-100" aria-label="Wishlist">
-              <Heart size={19} />
+            <Link to="/wishlist" className="relative hidden rounded-full border border-amber-900/20 p-2.5 hover:bg-amber-100 sm:inline-flex" aria-label="Wishlist">
+              <Heart size={18} />
               {wishlistCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">{wishlistCount}</span>}
             </Link>
-            <Link to="/cart" className="relative rounded-full border border-amber-900/20 p-3 hover:bg-amber-100">
-              <ShoppingBag size={19} />
+            <Link to="/cart" className="relative rounded-full border border-amber-900/20 p-2.5 hover:bg-amber-100" aria-label="Cart">
+              <ShoppingBag size={18} />
               {count > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-amber-600 px-1.5 text-xs font-bold text-white">{count}</span>}
             </Link>
-            <button onClick={() => setOpen(!open)} className="rounded-full border border-amber-900/20 p-3 lg:hidden"><Menu size={19} /></button>
+            <button onClick={() => setOpen(!open)} className="rounded-full border border-amber-900/20 p-2.5 lg:hidden" aria-label={open ? 'Close menu' : 'Open menu'}>{open ? <X size={18} /> : <Menu size={18} />}</button>
           </div>
         </div>
         {open && (
-          <nav className="border-t border-amber-900/10 px-4 py-4 lg:hidden">
-            <div className="flex flex-col gap-4">
-              {nav.map(([label, path]) => <NavLink key={path} to={path} onClick={() => setOpen(false)} className={linkClass}>{label}</NavLink>)}
+          <nav className="border-t border-amber-900/10 bg-[#fffaf1] px-4 py-4 lg:hidden">
+            <div className="flex flex-col">
+              {nav.map(([label, path]) => <NavLink key={path} to={path} className={linkClass}>{label}</NavLink>)}
+              <Link to="/wishlist" className="py-2 text-base font-medium text-stone-700 sm:hidden">Wishlist</Link>
+              <a href={`tel:${businessInfo.callLine}`} className="py-2 text-base font-medium text-stone-700 sm:hidden">Call {businessInfo.callLine}</a>
             </div>
           </nav>
         )}
