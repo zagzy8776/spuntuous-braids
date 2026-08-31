@@ -21,7 +21,6 @@ import BlogPost from './pages/BlogPost.jsx';
 import StyleFinder from './pages/StyleFinder.jsx';
 import Gifts from './pages/Gifts.jsx';
 import Services from './pages/Services.jsx';
-import Wholesale from './pages/Wholesale.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import AdminProducts from './pages/admin/AdminProducts.jsx';
@@ -61,7 +60,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/gifts" element={<Gifts />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/wholesale" element={<Wholesale />} />
+            <Route path="/wholesale" element={<Navigate to="/" replace />} />
             <Route path="/style-finder" element={<StyleFinder />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
