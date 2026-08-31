@@ -62,9 +62,9 @@ export default function Home() {
           src="/hero-crest.jpg"
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute -right-10 top-[-6%] h-[112%] w-auto max-w-none select-none object-contain opacity-40 mix-blend-screen sm:-right-6 sm:opacity-50 lg:right-[2%] lg:top-1/2 lg:h-[125%] lg:-translate-y-1/2 lg:opacity-80"
+          className="pointer-events-none absolute right-[-6%] top-[6%] h-[92%] w-auto max-w-none select-none object-contain opacity-60 mix-blend-screen sm:right-[-2%] sm:top-[2%] sm:h-[104%] sm:opacity-70 lg:right-[6%] lg:top-1/2 lg:h-[118%] lg:-translate-y-1/2 lg:opacity-90"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#160f0a] via-[#160f0a]/78 to-transparent sm:via-[#160f0a]/55" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#160f0a] via-[#160f0a]/45 to-transparent" />
         <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-16">
           <div className="relative z-10 max-w-xl lg:max-w-2xl">
             <p className="mb-4 inline-flex rounded-full border border-amber-300/30 px-3 py-1.5 text-xs text-amber-200 sm:px-4 sm:py-2 sm:text-sm">Sumptuous Braids · Owerri</p>
