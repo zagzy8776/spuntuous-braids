@@ -1,4 +1,58 @@
+import { useEffect, useRef } from 'react';
 import { isVideoUrl } from '../lib/api.js';
+
+function AutoPlayVideo({ src, className = '', controls = false }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return undefined;
+
+    node.muted = true;
+    node.defaultMuted = true;
+    node.playsInline = true;
+    node.setAttribute('playsinline', 'true');
+    node.setAttribute('webkit-playsinline', 'true');
+    node.setAttribute('muted', 'true');
+
+    const tryPlay = () => {
+      const playAttempt = node.play();
+      if (playAttempt?.catch) playAttempt.catch(() => {});
+    };
+
+    tryPlay();
+    node.addEventListener('canplay', tryPlay);
+    node.addEventListener('loadeddata', tryPlay);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) tryPlay();
+        else node.pause();
+      });
+    }, { threshold: 0.2 });
+    observer.observe(node);
+
+    return () => {
+      node.removeEventListener('canplay', tryPlay);
+      node.removeEventListener('loadeddata', tryPlay);
+      observer.disconnect();
+    };
+  }, [src]);
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      className={className}
+      autoPlay
+      muted
+      loop
+      playsInline
+      controls={controls}
+      preload="auto"
+    />
+  );
+}
 
 export default function MediaCard({ item, className = '', onClick }) {
   const video = isVideoUrl(item?.imageUrl);
@@ -8,16 +62,7 @@ export default function MediaCard({ item, className = '', onClick }) {
     <button type="button" onClick={onClick} className={`group overflow-hidden rounded-2xl bg-white text-left shadow-sm ring-1 ring-amber-900/10 ${className}`}>
       <div className="aspect-[3/4] overflow-hidden bg-stone-100">
         {video ? (
-          <video
-            src={item.imageUrl}
-            className="h-full w-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            controls={false}
-          />
+          <AutoPlayVideo src={item.imageUrl} className="h-full w-full object-cover" />
         ) : (
           <img src={item.imageUrl} alt={title} className="h-full w-full object-cover" loading="lazy" />
         )}
@@ -31,3 +76,5 @@ export default function MediaCard({ item, className = '', onClick }) {
     </button>
   );
 }
+
+export { AutoPlayVideo };
