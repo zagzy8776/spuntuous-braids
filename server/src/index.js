@@ -32,7 +32,8 @@ app.use(helmet({
 app.use(compression());
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    const vercel = Boolean(origin && origin.includes('.vercel.app'));
+    if (!origin || allowedOrigins.includes(origin) || vercel) {
       return callback(null, true);
     }
     return callback(new Error('Not allowed by CORS'));
@@ -70,7 +71,6 @@ app.get('/api/db/status', async (req, res) => {
       adminCount,
       categoryCount,
       hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
-      hasDirectUrl: Boolean(process.env.DATABASE_URL_UNPOOLED),
     });
   } catch (error) {
     console.error('Database status error:', error);
@@ -78,10 +78,9 @@ app.get('/api/db/status', async (req, res) => {
       status: 'database_error',
       code: error.code || error.name,
       message: error.code === 'P2021'
-        ? 'Database tables are missing. Run: npx prisma db push, then npm run db:seed.'
+        ? 'Database tables are missing. Redeploy on Vercel so Prisma can push the schema.'
         : error.message,
       hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
-      hasDirectUrl: Boolean(process.env.DATABASE_URL_UNPOOLED),
     });
   }
 });
@@ -97,8 +96,6 @@ app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/promos', promoRoutes);
 app.use('/api/stock-alerts', stockAlertRoutes);
 
-// Backward-compatible route aliases for frontend deployments that were
-// configured with the Render root URL instead of the `/api` base path.
 app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/categories', categoryRoutes);
@@ -135,42 +132,32 @@ app.use((error, req, res, next) => {
 
   if (error.code === 'P2021') {
     return res.status(500).json({
-      message: 'Database tables are missing. Run Prisma db push and seed on Render.',
+      message: 'Database tables are missing. Redeploy on Vercel so Prisma can push the schema.',
       code: error.code,
     });
   }
 
   if (error.code === 'P1001') {
     return res.status(500).json({
-      message: 'Database server cannot be reached. Check Neon DATABASE_URL on Render.',
+      message: 'Database server cannot be reached. Check DATABASE_URL on Vercel.',
       code: error.code,
     });
   }
 
   if (error.name === 'PrismaClientInitializationError') {
     return res.status(500).json({
-      message: 'Prisma could not initialize. Check DATABASE_URL and DATABASE_URL_UNPOOLED on Render.',
+      message: 'Prisma could not initialize. Check DATABASE_URL on Vercel.',
       code: error.errorCode || error.name,
     });
-  }
-
-  if (error.code === 'CLOUDINARY_NOT_CONFIGURED') {
-    return res.status(500).json({ message: error.message, code: error.code });
-  }
-
-  if (error.http_code || error.name === 'Error') {
-    const isUploadRoute = req.path.includes('upload-image') || req.path.includes('gallery');
-    if (isUploadRoute) {
-      return res.status(500).json({
-        message: error.message || 'Image upload failed. Check Cloudinary credentials on Render.',
-        code: error.code || error.http_code || error.name,
-      });
-    }
   }
 
   res.status(500).json({ message: 'Something went wrong.' });
 });
 
-app.listen(port, () => {
-  console.log(`Sumptuous Braids API running on port ${port}`);
-});
+module.exports = app;
+
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Sumptuous Braids API running on port ${port}`);
+  });
+}
