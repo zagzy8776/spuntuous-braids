@@ -1,0 +1,30 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const { z } = require('zod');
+const prisma = require('./lib/prisma');
+
+const app = express();
+const port = process.env.PORT || 5000;
+const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(x=>x.trim()).filter(Boolean) : ['http://localhost:5173'];
+app.disable('x-powered-by');
+app.set('trust proxy',1);
+app.use(helmet({crossOriginResourcePolicy:{policy:'cross-origin'}}));
+app.use(compression());
+app.use(cors({origin:(origin,cb)=>!origin||allowedOrigins.includes(origin)?cb(null,true):cb(new Error('Not allowed by CORS')),credentials:true}));
+app.use(rateLimit({windowMs:15*60*1000,limit:300,standardHeaders:true,legacyHeaders:false}));
+app.use(express.json({limit:'1mb'}));
+
+app.get('/',(_,res)=>res.json({name:'Sumptuous Braids API',status:'healthy'}));
+app.get('/api/health',(_,res)=>res.json({status:'ok',timestamp:new Date().toISOString()}));
+app.get('/api/products',async(_,res,next)=>{try{const products=await prisma.product.findMany({where:{isActive:true},include:{category:true},orderBy:{createdAt:'desc'}});res.json(products)}catch(e){next(e)}});
+app.get('/api/services',async(_,res,next)=>{try{res.json(await prisma.service.findMany({where:{isActive:true},orderBy:{createdAt:'asc'}}))}catch(e){next(e)}});
+app.post('/api/bookings',async(req,res,next)=>{try{const data=z.object({serviceId:z.string().optional(),serviceName:z.string().min(2),customerName:z.string().min(2),customerPhone:z.string().min(7),customerEmail:z.string().email().optional(),preferredDate:z.coerce.date().optional(),preferredTime:z.string().optional(),note:z.string().max(1000).optional()}).parse(req.body);const booking=await prisma.booking.create({data:{...data,bookingNumber:`SB-${Date.now()}`}});res.status(201).json(booking)}catch(e){next(e)}});
+app.post('/api/stockists',async(req,res,next)=>{try{const data=z.object({businessName:z.string().min(2),contactName:z.string().min(2),phone:z.string().min(7),email:z.string().email().optional(),location:z.string().optional(),requestedProducts:z.array(z.string()).default([]),note:z.string().max(1000).optional()}).parse(req.body);const request=await prisma.stockistRequest.create({data});res.status(201).json(request)}catch(e){next(e)}});
+app.post('/api/events',async(req,res,next)=>{try{const data=z.object({sessionId:z.string().optional(),path:z.string().min(1),title:z.string().optional(),referrer:z.string().optional(),source:z.string().optional(),device:z.string().optional(),browser:z.string().optional(),productSlug:z.string().optional()}).parse(req.body);await prisma.visitorEvent.create({data});res.status(204).end()}catch(e){next(e)}});
+app.use((req,res)=>res.status(404).json({message:'Route not found.'}));
+app.use((error,req,res,_)=>{console.error(error);if(error.name==='ZodError')return res.status(400).json({message:'Validation error.',errors:error.issues});if(error.code==='P2002')return res.status(409).json({message:'A record with this value already exists.'});res.status(500).json({message:'Something went wrong.'})});
+app.listen(port,()=>console.log(`Sumptuous Braids API running on port ${port}`));

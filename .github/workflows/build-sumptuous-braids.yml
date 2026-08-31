@@ -1,54 +1,38 @@
 name: Build Sumptuous Braids
+
 on:
   push:
-    branches: [main]
+    branches:
+      - build/roc-realm-adaptation
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
-  build:
+  sync-reference-architecture:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
-      - name: Build from Roc Realm architecture
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: build/roc-realm-adaptation
+
+      - name: Copy the complete Roc Realm codebase
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
+          rm -rf /tmp/roc
           git clone --depth 1 https://github.com/zagzy8776/Rocrealmperfumes.git /tmp/roc
           rsync -a --delete --exclude='.git/' --exclude='.github/' /tmp/roc/ ./
-          mkdir -p client/src/pages client/src/lib .github/workflows
-          cat > client/src/lib/brand.js <<'EOF'
-          export const brand={name:'Sumptuous Braids',phone:'08070453422',whatsapp:'2348070453422',email:'Johnassumpta3@gmail.com',address:'86 Wethral Road, opposite Premium Trust Bank',tiktok:'https://www.tiktok.com/@sumptuousbraids',instagram:'https://www.instagram.com/sumptuousbraids',facebook:'https://www.facebook.com/share/14msRH6cJ4t/'};
-          EOF
-          python3 - <<'PY'
-          from pathlib import Path
-          for f in Path('client/src').rglob('*'):
-            if f.is_file() and f.suffix in {'.js','.jsx','.css','.html'}:
-              try:s=f.read_text()
-              except:continue
-              for a,b in [('Roc Realm Perfumes','Sumptuous Braids'),('Roc Realm','Sumptuous Braids'),('Perfumes','Hair Products'),('perfumes','hair products'),('fragrances','hair products'),('fragrance','hair')]:s=s.replace(a,b)
-              f.write_text(s)
-          main=Path('client/src/main.jsx'); s=main.read_text()
-          for name in ['PerfumeFinder','Gifts','BlogPost','Blog']:
-            import re
-            s=re.sub(r"import .*? from ['\"]\.\/pages\/%s\.jsx['\"];\n"%name,'',s)
-            s=re.sub(r'\s*<Route path="/(?:perfume-finder|gifts|blog/:slug|blog)"[^\n]*\/>','',s)
-          if "./pages/Services.jsx" not in s:s=s.replace("import Shop from './pages/Shop.jsx';","import Shop from './pages/Shop.jsx';\nimport Services from './pages/Services.jsx';\nimport Wholesale from './pages/Wholesale.jsx';")
-          if 'path="/services"' not in s:s=s.replace('</Routes>','<Route path="/services" element={<Services/>}/><Route path="/wholesale" element={<Wholesale/>}/></Routes>')
-          main.write_text(s)
-          Path('client/src/pages/Services.jsx').write_text('''import {MessageCircle,Sparkles} from "lucide-react";import {brand} from "../lib/brand.js";const items=["Braid Installation","Knotless Braids","Box Braids","Stitch Braids","Cornrows & Feed-in Braids","Wig Installation","Hair Styling & Finishing"];export default function Services(){return <main className="min-h-screen bg-[#fffaf1]"><section className="luxury-gradient text-white"><div className="mx-auto max-w-7xl px-6 py-24"><p className="uppercase tracking-[.3em] text-amber-200">Professional Services</p><h1 className="mt-3 font-display text-5xl font-semibold">Beautiful work, professionally installed.</h1><p className="mt-5 max-w-2xl text-stone-200">For availability, pricing and style consultation, chat directly on WhatsApp.</p><a className="mt-8 inline-flex rounded-full bg-amber-500 px-6 py-3 font-semibold text-stone-950" href={`https://wa.me/${brand.whatsapp}?text=Hello%20Sumptuous%20Braids%2C%20I%20want%20to%20book%20a%20service.`}><MessageCircle size={18}/> Book on WhatsApp</a></div></section><section className="mx-auto grid max-w-7xl gap-4 px-6 py-16 sm:grid-cols-2 lg:grid-cols-3">{items.map(x=><article className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-amber-900/10" key={x}><Sparkles className="text-amber-700"/><h2 className="mt-5 font-display text-2xl font-semibold">{x}</h2><p className="mt-2 text-sm leading-6 text-stone-500">Professional installation with attention to neatness, comfort and finish.</p><a className="mt-5 inline-block font-semibold text-amber-800" href={`https://wa.me/${brand.whatsapp}?text=Hello%20Sumptuous%20Braids%2C%20I%20want%20to%20ask%20about%20${encodeURIComponent(x)}.`}>Enquire on WhatsApp</a></article>)}</section></main>}''')
-          Path('client/src/pages/Wholesale.jsx').write_text('''import {MessageCircle,PackageCheck,Store} from "lucide-react";import {brand} from "../lib/brand.js";export default function Wholesale(){return <main className="min-h-screen bg-[#fffaf1]"><section className="luxury-gradient text-white"><div className="mx-auto max-w-7xl px-6 py-24"><p className="uppercase tracking-[.3em] text-amber-200">Wholesale & Stockists</p><h1 className="mt-3 font-display text-5xl font-semibold">Stock products your customers will ask for.</h1><p className="mt-5 max-w-2xl text-stone-200">Beauty stores, salons and resellers can enquire about bulk orders, pricing and dispatch.</p><a className="mt-8 inline-flex rounded-full bg-amber-500 px-6 py-3 font-semibold text-stone-950" href={`https://wa.me/${brand.whatsapp}?text=Hello%20Sumptuous%20Braids%2C%20I%20am%20interested%20in%20becoming%20a%20stockist.`}><MessageCircle size={18}/> Become a stockist</a></div></section><section className="mx-auto grid max-w-7xl gap-5 px-6 py-16 md:grid-cols-3"><article className="rounded-3xl bg-white p-7"><Store/><h2 className="mt-4 text-xl font-semibold">For retailers</h2><p className="mt-2 text-sm text-stone-500">Stock branded hair essentials in your store or salon.</p></article><article className="rounded-3xl bg-white p-7"><PackageCheck/><h2 className="mt-4 text-xl font-semibold">Bulk ordering</h2><p className="mt-2 text-sm text-stone-500">Ask about quantities, wholesale pricing and dispatch.</p></article><article className="rounded-3xl bg-white p-7"><MessageCircle/><h2 className="mt-4 text-xl font-semibold">Direct support</h2><p className="mt-2 text-sm text-stone-500">Every wholesale enquiry goes directly to WhatsApp.</p></article></section></main>}''')
-          # Add persistent contact info and WhatsApp CTA to a shared layout when possible.
-          for f in Path('client/src/components').glob('*Layout*.jsx'):
-            s=f.read_text()
-            s=s.replace('Roc Realm','Sumptuous Braids').replace('RocRealm','SumptuousBraids')
-            f.write_text(s)
-          idx=Path('client/index.html')
-          if idx.exists():idx.write_text(idx.read_text().replace('Roc Realm Perfumes','Sumptuous Braids'))
-          PY
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Commit the complete source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m "feat: launch Sumptuous Braids business site" || true
-          git push
+          git commit -m 'chore: sync complete Roc Realm source architecture [skip ci]' || exit 0
+          git push origin HEAD:build/roc-realm-adaptation
