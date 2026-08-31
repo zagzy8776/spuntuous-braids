@@ -58,15 +58,24 @@ export default function Home() {
   return (
     <main>
       <section className="luxury-gradient relative overflow-hidden text-white">
+        <img
+          src="/hero-crest.jpg"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-10 top-[-6%] h-[112%] w-auto max-w-none select-none object-contain opacity-40 mix-blend-screen sm:-right-6 sm:opacity-50 lg:right-[2%] lg:top-1/2 lg:h-[125%] lg:-translate-y-1/2 lg:opacity-80"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#160f0a] via-[#160f0a]/78 to-transparent sm:via-[#160f0a]/55" />
         <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-16">
-          <p className="mb-4 inline-flex rounded-full border border-amber-300/30 px-3 py-1.5 text-xs text-amber-200 sm:px-4 sm:py-2 sm:text-sm">Sumptuous Braids · Owerri</p>
-          <h1 className="font-display text-[2rem] font-semibold leading-[1.15] sm:text-6xl">Beautiful braids. A sumptuous finish.</h1>
-          <p className="mt-4 max-w-2xl text-[15px] leading-7 text-stone-200 sm:text-lg">Professional unisex braid installation and branded hair care from your number one trusted studio in Owerri. Book a style, shop the products, or stock your shelf all in one place.</p>
-          <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
-            <Link to="/services" className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-[16px] font-semibold text-stone-950 hover:bg-amber-300">Book a service <ArrowRight size={18} /></Link>
-            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-              <Link to="/shop" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">Shop products</Link>
-              <a href={whatsappHref(waMessages.heroWhatsApp)} target="_blank" rel="noreferrer" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">WhatsApp us</a>
+          <div className="relative z-10 max-w-xl lg:max-w-2xl">
+            <p className="mb-4 inline-flex rounded-full border border-amber-300/30 px-3 py-1.5 text-xs text-amber-200 sm:px-4 sm:py-2 sm:text-sm">Sumptuous Braids · Owerri</p>
+            <h1 className="font-display text-[2rem] font-semibold leading-[1.15] sm:text-6xl">Beautiful braids. A sumptuous finish.</h1>
+            <p className="mt-4 max-w-xl text-[15px] leading-7 text-stone-200 sm:text-lg">Professional unisex braid installation and branded hair care from your number one trusted studio in Owerri. Book a style, shop the products, or stock your shelf all in one place.</p>
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
+              <Link to="/services" className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-[16px] font-semibold text-stone-950 hover:bg-amber-300">Book a service <ArrowRight size={18} /></Link>
+              <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+                <Link to="/shop" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">Shop products</Link>
+                <a href={whatsappHref(waMessages.heroWhatsApp)} target="_blank" rel="noreferrer" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">WhatsApp us</a>
+              </div>
             </div>
           </div>
         </div>
