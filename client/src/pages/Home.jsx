@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
-import { api, waMessages, whatsappHref } from '../lib/api.js';
+import { ArrowRight, X } from 'lucide-react';
+import { api, isVideoUrl, waMessages, whatsappHref } from '../lib/api.js';
 import { setPageMeta } from '../lib/seo.js';
 import ProductCard from '../components/ProductCard.jsx';
 import MediaCard from '../components/MediaCard.jsx';
@@ -12,6 +12,7 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [featuredWork, setFeaturedWork] = useState([]);
+  const [selected, setSelected] = useState(null);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1, hasMore: false });
   const [loading, setLoading] = useState(false);
@@ -112,7 +113,7 @@ export default function Home() {
           </div>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {featuredWork.map((item) => (
-              <MediaCard key={item.id} item={item} className="w-44 shrink-0 sm:w-56" />
+              <MediaCard key={item.id} item={item} className="w-44 shrink-0 sm:w-56" onClick={() => setSelected(item)} />
             ))}
           </div>
         </section>
@@ -151,6 +152,26 @@ export default function Home() {
         )}
         {!products.length && !loading && <p className="rounded-[2rem] bg-white p-10 text-center text-stone-500">Products will appear here once they are added from the admin panel.</p>}
       </section>
+
+      {selected && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-stone-950/80 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
+          <article className="w-full max-w-3xl overflow-hidden rounded-[1.5rem] bg-[#fffaf1]" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-end p-3">
+              <button type="button" onClick={() => setSelected(null)} className="rounded-full bg-stone-950 p-2 text-white" aria-label="Close"><X size={18} /></button>
+            </div>
+            {isVideoUrl(selected.imageUrl) ? (
+              <video src={selected.imageUrl} className="max-h-[68vh] w-full bg-black object-contain" controls autoPlay playsInline />
+            ) : (
+              <img src={selected.imageUrl} alt={selected.title || 'Studio work'} className="max-h-[68vh] w-full object-contain" />
+            )}
+            <div className="p-5">
+              <h2 className="font-display text-2xl font-semibold">{selected.title || 'Sumptuous Braids'}</h2>
+              {selected.caption && <p className="mt-2 text-stone-600">{selected.caption}</p>}
+              <a href={whatsappHref(waMessages.gallery(selected.title))} target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-full bg-green-600 px-5 py-3 text-sm font-semibold text-white">Book this look on WhatsApp</a>
+            </div>
+          </article>
+        </div>
+      )}
     </main>
   );
 }
