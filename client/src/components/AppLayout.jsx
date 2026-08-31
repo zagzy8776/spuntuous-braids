@@ -35,7 +35,7 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#fffaf1] text-stone-900">
       <RouteTracker />
-      <header className="sticky top-0 z-40 border-b border-amber-900/10 bg-[#fffaf1]/95 backdrop-blur-xl">
+      <header className="liquid-nav sticky top-0 z-40 border-b border-amber-900/10">
         <PromoStrip />
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:h-[4.5rem] sm:px-6 lg:px-8">
           <Link to="/" className="flex min-w-0 items-center gap-2.5">
@@ -56,15 +56,15 @@ export default function AppLayout() {
           </nav>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
             <a href={`tel:${businessInfo.callLine}`} className="hidden rounded-full bg-stone-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-700 lg:inline-flex">Call: {businessInfo.callLine}</a>
-            <Link to="/wishlist" className="relative hidden rounded-full border border-amber-900/20 p-2.5 hover:bg-amber-50 sm:inline-flex" aria-label="Wishlist">
+            <Link to="/wishlist" className="liquid-glass relative hidden rounded-full p-2.5 sm:inline-flex" aria-label="Wishlist">
               <Heart size={18} />
               {wishlistCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">{wishlistCount}</span>}
             </Link>
-            <Link to="/cart" className="relative rounded-full border border-amber-900/20 p-2 hover:bg-amber-50 sm:p-2.5" aria-label="Cart">
+            <Link to="/cart" className="liquid-glass relative rounded-full p-2 sm:p-2.5" aria-label="Cart">
               <ShoppingBag size={18} />
               {count > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-amber-600 px-1.5 text-[10px] font-bold text-white">{count}</span>}
             </Link>
-            <button type="button" onClick={() => setOpen((value) => !value)} className="rounded-full border border-amber-900/20 p-2 lg:hidden sm:p-2.5" aria-label={open ? 'Close menu' : 'Open menu'}>
+            <button type="button" onClick={() => setOpen((value) => !value)} className="liquid-glass rounded-full p-2 lg:hidden sm:p-2.5" aria-label={open ? 'Close menu' : 'Open menu'}>
               {open ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
@@ -73,8 +73,8 @@ export default function AppLayout() {
 
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button type="button" className="absolute inset-0 bg-stone-950/40" aria-label="Close menu" onClick={() => setOpen(false)} />
-          <nav className="absolute inset-x-0 top-0 max-h-[100dvh] overflow-y-auto border-b border-amber-900/10 bg-[#fffaf1] px-5 pb-8 pt-[max(1rem,env(safe-area-inset-top))]">
+          <button type="button" className="absolute inset-0 bg-stone-950/35" aria-label="Close menu" onClick={() => setOpen(false)} />
+          <nav className="liquid-glass absolute inset-x-0 top-0 max-h-[100dvh] overflow-y-auto px-5 pb-8 pt-[max(1rem,env(safe-area-inset-top))]">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-9 w-9 overflow-hidden rounded-full bg-stone-950">
@@ -82,7 +82,7 @@ export default function AppLayout() {
                 </span>
                 <span className="font-display text-lg">Menu</span>
               </div>
-              <button type="button" onClick={() => setOpen(false)} className="rounded-full border border-amber-900/20 p-2" aria-label="Close menu">
+              <button type="button" onClick={() => setOpen(false)} className="liquid-glass rounded-full p-2" aria-label="Close menu">
                 <X size={18} />
               </button>
             </div>
