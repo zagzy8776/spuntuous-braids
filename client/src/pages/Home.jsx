@@ -67,14 +67,14 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#160f0a] via-[#160f0a]/45 to-transparent" />
         <div className="relative mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-16">
           <div className="relative z-10 max-w-xl lg:max-w-2xl">
-            <p className="mb-4 inline-flex rounded-full border border-amber-300/30 px-3 py-1.5 text-xs text-amber-200 sm:px-4 sm:py-2 sm:text-sm">Sumptuous Braids · Owerri</p>
+            <p className="liquid-glass-dark mb-4 inline-flex rounded-full px-3 py-1.5 text-xs text-amber-200 sm:px-4 sm:py-2 sm:text-sm">Sumptuous Braids · Owerri</p>
             <h1 className="font-display text-[2rem] font-semibold leading-[1.15] sm:text-6xl">Beautiful braids. A sumptuous finish.</h1>
             <p className="mt-4 max-w-xl text-[15px] leading-7 text-stone-200 sm:text-lg">Professional unisex braid installation and branded hair care from your number one trusted studio in Owerri. Book a style, shop the products, or stock your shelf all in one place.</p>
             <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
               <Link to="/services" className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-[16px] font-semibold text-stone-950 hover:bg-amber-300">Book a service <ArrowRight size={18} /></Link>
               <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-                <Link to="/shop" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">Shop products</Link>
-                <a href={whatsappHref(waMessages.heroWhatsApp)} target="_blank" rel="noreferrer" className="rounded-full border border-white/20 px-4 py-3.5 text-center text-[15px] font-semibold text-white hover:bg-white/10 sm:px-6">WhatsApp us</a>
+                <Link to="/shop" className="liquid-glass-dark rounded-full px-4 py-3.5 text-center text-[15px] font-semibold text-white sm:px-6">Shop products</Link>
+                <a href={whatsappHref(waMessages.heroWhatsApp)} target="_blank" rel="noreferrer" className="liquid-glass-dark rounded-full px-4 py-3.5 text-center text-[15px] font-semibold text-white sm:px-6">WhatsApp us</a>
               </div>
             </div>
           </div>
@@ -83,17 +83,17 @@ export default function Home() {
 
       <section className="relative z-10 mx-auto -mt-8 max-w-7xl px-4 sm:-mt-10 sm:px-6 lg:px-8">
         <div className="grid gap-3 md:grid-cols-3 md:gap-4">
-          <Link to="/services" className="rounded-2xl bg-white p-5 shadow-lg shadow-stone-900/5 ring-1 ring-amber-900/10 sm:rounded-[2rem] sm:p-6">
+          <Link to="/services" className="liquid-glass rounded-2xl p-5 sm:rounded-[2rem] sm:p-6">
             <p className="text-[11px] uppercase tracking-[0.28em] text-amber-700">01</p>
             <h2 className="mt-2 font-display text-[1.65rem] leading-tight sm:mt-3 sm:text-2xl">Salon services</h2>
             <p className="mt-2 text-sm leading-6 text-stone-600">Unisex braid installation, wig installation, styling and finishing.</p>
           </Link>
-          <Link to="/shop" className="rounded-2xl bg-white p-5 shadow-lg shadow-stone-900/5 ring-1 ring-amber-900/10 sm:rounded-[2rem] sm:p-6">
+          <Link to="/shop" className="liquid-glass rounded-2xl p-5 sm:rounded-[2rem] sm:p-6">
             <p className="text-[11px] uppercase tracking-[0.28em] text-amber-700">02</p>
             <h2 className="mt-2 font-display text-[1.65rem] leading-tight sm:mt-3 sm:text-2xl">Branded products</h2>
             <p className="mt-2 text-sm leading-6 text-stone-600">Hair oil, edge control, braiding extensions and care essentials.</p>
           </Link>
-          <Link to="/gallery" className="rounded-2xl bg-white p-5 shadow-lg shadow-stone-900/5 ring-1 ring-amber-900/10 sm:rounded-[2rem] sm:p-6">
+          <Link to="/gallery" className="liquid-glass rounded-2xl p-5 sm:rounded-[2rem] sm:p-6">
             <p className="text-[11px] uppercase tracking-[0.28em] text-amber-700">03</p>
             <h2 className="mt-2 font-display text-[1.65rem] leading-tight sm:mt-3 sm:text-2xl">Our work</h2>
             <p className="mt-2 text-sm leading-6 text-stone-600">Photos and videos of finished styles from the studio.</p>
@@ -122,7 +122,7 @@ export default function Home() {
         <div className="flex gap-3 overflow-x-auto pb-1">
           <Link to="/shop" className="shrink-0 rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white">All Products</Link>
           {categories.slice(0, 10).map((category) => (
-            <Link key={category.id} to={`/shop?category=${category.slug}`} className="shrink-0 rounded-full bg-white px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm ring-1 ring-amber-900/10">{category.name}</Link>
+            <Link key={category.id} to={`/shop?category=${category.slug}`} className="liquid-glass shrink-0 rounded-full px-5 py-3 text-sm font-semibold text-stone-800">{category.name}</Link>
           ))}
         </div>
       </section>
