@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum OrderStatus {
@@ -151,8 +150,8 @@ model GalleryImage {
   publicId    String?
   isFeatured  Boolean  @default(false)
   isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model VisitorEvent {
@@ -166,7 +165,7 @@ model VisitorEvent {
   browser     String?
   productSlug String?
   ipHash      String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
   @@index([createdAt])
   @@index([path])
@@ -181,8 +180,8 @@ model Testimonial {
   location  String?
   rating    Int      @default(5)
   isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model PromoBanner {
@@ -194,8 +193,8 @@ model PromoBanner {
   isActive  Boolean  @default(true)
   startsAt  DateTime?
   endsAt    DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model StockAlert {
@@ -207,8 +206,8 @@ model StockAlert {
   phone       String
   message     String?
   isContacted Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([productSlug])
   @@index([isContacted])
